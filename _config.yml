@@ -100,9 +100,9 @@ page-mathjax: false
 
 
 
-# Friends
-#friends: [
-    {
+ Friends
+friends: [
+  #  {
     #     title: "Su",
     #     href: "http://su.gallery/"
     # },{
@@ -112,4 +112,4 @@ page-mathjax: false
 #        title: "Sherry Wu",
  #       href: "https://xuechundesign.github.io"
   #  }
-#]
+]
