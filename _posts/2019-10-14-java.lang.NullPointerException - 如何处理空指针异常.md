@@ -1,0 +1,289 @@
+**当应用程序试图null在需要对象的情况下使用时抛出。这些包括：**
+
+------
+
+```
+调用null对象的实例方法。
+访问或修改null对象的字段。
+把长度null当作一个数组。
+像访问或修改null阵列一样访问或修改插槽。
+投掷null就好像它是一个Throwable 价值。
+应用程序应该抛出此类的实例来指示null对象的其他非法使用。 
+NullPointerException对象可以由虚拟机构造，就像抑制被禁用和/或堆栈跟踪不可写一样。
+1234567
+```
+
+------
+
+**为什么我们需要空值？**
+
+------
+
+```
+如前所述，nullJava是一种特殊的值。
+它在编码某些设计模式（如空对象模式和单例模式）时非常有用。
+空对象模式提供了一个对象作为缺少给定类型对象的代理。
+Singleton模式确保只创建一个类的一个实例，并且旨在提供对象的全局访问点。
+1234
+```
+
+------
+
+**例如，最多创建一个类实例的示例方法是将其所有构造函数声明为private，然后创建一个返回该类的唯一实例的公共方法：**
+
+*TestSingleton.java:*
+
+```
+import java.util.UUID;
+
+class Singleton {
+
+     private static Singleton single = null;
+     private String ID = null;
+
+     private Singleton() {
+          /* Make it private, in order to prevent the creation of new instances of
+           * the Singleton class. */
+
+          ID = UUID.randomUUID().toString(); // Create a random ID.
+     }
+
+     public static Singleton getInstance() {
+          if (single == null)
+               single = new Singleton();
+
+          return single;
+     }
+
+     public String getID() {
+          return this.ID;
+     }
+}
+
+public class TestSingleton {
+     public static void main(String[] args) {
+          Singleton s = Singleton.getInstance();
+          System.out.println(s.getID());
+     }
+}
+1234567891011121314151617181920212223242526272829303132
+```
+
+**在这个例子中，我们声明了一个Singleton类的静态实例。该实例在该getInstance方法内最多初始化一次。注意使用null启用唯一实例创建的值。**
+
+### 如何避免NullPointerException
+
+为了避免这种情况NullPointerException，请确保在使用它们之前，所有对象都已正确初始化。注意，当你声明一个引用变量时，你真的创建了一个指向对象的指针。在向对象请求方法或字段之前，您必须验证指针是否为空。
+
+另外，如果引发异常，请使用驻留在异常堆栈跟踪中的信息。执行的堆栈跟踪由JVM提供，以启用应用程序的调试。找到捕获异常的方法和行，然后确定哪个引用等于在特定行中为null。
+
+在本节的其余部分中，我们将介绍一些处理上述例外的技术。但是，它们并没有消除这个问题，程序员在编写应用程序时应该小心。
+
+### 1.字符串与文字的比较
+
+应用程序执行代码中的一个非常常见的情况涉及字符串变量和文字之间的比较。文字可以是一个字符串或Enum的元素。不要从空对象调用方法，而应考虑从文字中调用它。例如，观察以下情况：
+
+```
+String str = null;
+if（str.equals（“Test”））{
+     / *这里的代码将不会被触发，因为会抛出异常。* /
+}
+1234
+```
+
+上面的代码片段会抛出一个NullPointerException。但是，如果我们从文字中调用方法，那么执行流程通常会继续：
+
+```
+String str = null;
+if（“Test”.equals（str））{
+     / *正确的用例。不会抛出异常。* /
+}
+1234
+```
+
+### 2.检查方法的参数
+
+在执行你自己的方法的主体之前，一定要检查它的参数为空值。只有在正确检查了参数后，才继续执行该方法。否则，您可以抛出一个IllegalArgumentException并通知调用方法传递的参数有问题。
+
+例如：
+
+```
+public static int getLength（String s）{
+     如果（s == null）
+          抛出新的IllegalArgumentException（“参数不能为空”）;
+
+     return s.length（）;
+}
+123456
+```
+
+### 3.优先使用String.valueOf（）方法代替toString（）
+
+当您的应用程序代码需要对象的字符串表示形式时，请避免使用该对象的toString方法。如果你的对象的引用等于null，NullPointerException则会抛出a。
+
+相反，考虑使用静态String.valueOf方法，该方法不会抛出任何异常并打印"null"，以防函数的参数等于null。
+
+### 4.使用三元运算符
+
+该ternary操作是非常有用的，可以帮助我们避免了NullPointerException。运营商的形式是：
+
+```
+布尔表达式？value1：value2;
+1
+```
+
+首先，评估布尔表达式。如果表达式为true，则返回value1，否则返回value2。我们可以使用ternary运算符来处理空指针，如下所示：
+
+```
+String message =（str == null）？""：str.substring（0，10）;
+1
+```
+
+如果str引用为空，则消息变量将为空。否则，如果str指向实际数据，则消息将检索它的前10个字符。
+
+### 5.创建返回空集合而不是null的方法
+
+一个非常好的技术是创建返回一个空集合的方法，而不是一个null值。你的应用程序的代码可以遍历空集合并使用它的方法和字段，而不会抛出一个NullPointerException。例如：
+
+*Example.java*
+
+```
+public class Example {
+     private static List<Integer> numbers = null;
+
+     public static List<Integer> getList() {
+          if (numbers == null)
+               return Collections.emptyList();
+          else
+               return numbers;
+     }
+}
+12345678910
+```
+
+### 6.使用Apache的StringUtils类
+
+Apache的Commons Lang是一个为java.langAPI 提供帮助工具的库，比如字符串操作方法。提供字符串操作的示例类是StringUtils.java，它null静静地处理输入字符串。
+
+你可以使用StringUtils.isNotEmpty, StringUtils.IsEmpty和StringUtils.equals方法，以避免NullPointerException。例如：
+
+```
+if（StringUtils.isNotEmpty（str））{ 
+     System.out.println（str.toString（））; 
+}
+123
+```
+
+### 7.使用contains（），containsKey（），containsValue（）方法
+
+如果您的应用程序代码使用集合，例如Maps考虑使用包含containsKey和containsValue方法。例如，在地图中验证其存在之后，检索特定键的值：
+
+```
+Map <String，String> map = ... 
+... 
+String key = ... 
+String value = map.get（key）; 
+的System.out.println（value.toString（））; //如果值为null，则会抛出异常。
+12345
+```
+
+在上面的代码片段中，我们不检查密钥是否真的存在于内部Map，因此返回的值可以是null。最安全的方法如下：
+
+```
+Map <String，String> map = ... 
+... 
+String key = ... 
+if（map.containsKey（key））{ 
+     String value = map.get（key）; 
+     的System.out.println（value.toString（））; //不会抛出异常。
+}
+1234567
+```
+
+### 8.检查外部方法的返回值
+
+在实践中使用外部库是很常见的。这些库包含返回引用的方法。确保返回的参考不是null。另外，请考虑阅读该方法的Javadoc，以便更好地理解其功能和返回值。
+
+### 9.使用断言
+
+断言在测试代码时非常有用，并且可以被使用，以避免执行代码片断，从而导致错误NullPointerException。Java断言是用assert关键字实现的，并抛出一个AssertionError。
+
+请注意，您必须显式启用JVM的断言标志，方法是使用–ea参数执行该标志。否则，断言将被完全忽略。
+
+使用Java断言的示例示例如下：
+
+```
+public static int getLength（String s）{ 
+     / *确保String不为null。* / 
+     assert（s！= null）; 
+
+     return s.length（）; 
+}
+123456
+```
+
+如果您执行上面的代码段并传递一个空参数getLength，则会出现以下错误消息：
+
+```
+Exception in thread "main" java.lang.AssertionError
+1
+```
+
+最后，您可以使用测试框架Assert提供的类jUnit。
+
+### 10.单元测试
+
+在测试代​​码的功能和正确性时，单元测试可能非常有用。花一些时间编写一些测试用例，验证NullPointerException应用程序的代码是否经历了特定的执行流程，否则将引发no 。
+
+### 现有的NullPointerException安全方法
+
+### 1.访问类的静态成员或方法
+
+当你的代码试图访问静态变量或类的方法时，即使对象的引用等于null，JVM也不会抛出一个NullPointerException。这是由于Java编译器在编译过程中将静态方法和字段存储在特殊位置。因此，静态字段和方法不与对象相关联，而与类的名称相关联。
+
+例如，下面的代码不会抛出NullPointerException：
+
+*TestStatic.java：*
+
+```
+class SampleClass { 
+
+     public static void printMessage（）{ 
+          System.out.println（“Hello Java Geeks！”）; 
+     } 
+} 
+
+public class TestStatic { 
+     public static void main（String [] args）{ 
+          SampleClass sc = null; 
+          sc.printMessage（）; 
+     } 
+}
+12345678910111213
+```
+
+注意，尽管SampleClass等于的实例null将会被正确执行。但是，对于静态方法或字段，最好以静态方式访问它们，比如SampleClass.printMessage()。
+
+### 2.运营商的instanceof
+
+instanceof即使对象的引用等于，也可以使用该运算符null。在instanceof操作时，参考值等于为null，不抛出一个返回false NullPointerException。例如，考虑下面的代码片段：
+
+```
+String str = null;
+if(str instanceof String)
+     System.out.println("It's an instance of the String class!");
+else
+     System.out.println("Not an instance of the String class!");
+12345
+```
+
+正如预期的那样，执行的结果是：
+
+```
+Not an instance of the String class!
+1
+```
+
+这是一篇关于如何处理Java的教程NullPointerException。
+
+原文i地址：https://blog.csdn.net/qq_35376421/article/details/80239080
