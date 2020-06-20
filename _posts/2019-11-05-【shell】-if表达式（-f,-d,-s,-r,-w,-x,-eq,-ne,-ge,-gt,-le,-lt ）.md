@@ -1,3 +1,15 @@
+---
+layout:     post
+title:      "shell if 表达式"
+subtitle:   " \"-f,-d,-s,-r,-w,-x,-eq,-ne,-ge,-gt,-le,-lt \""
+date:       2019-11-05 12:00:00
+author:     "kaiwen"
+header-img: "img/post-bg-2015.jpg"
+catalog: true
+tags:
+    - shell
+    - Meta
+---
 ### 文件表达式
 ```
 if [ -f file ] 如果文件存在

@@ -59,14 +59,14 @@ show_progress(0.500000, 0);
   def FormatPartition(self, partition):
     """Format the given partition, specified by its mount point (eg,
     "/system")."""
- 
+
     reserve_size = 0
     fstab = self.info.get("fstab", None)
- 
+     
     #wschen 2012-11-12 
     if partition == "/custom":
       self.script.append('format("ext4", "EMMC", "/dev/block/mmcblk", "0", "/custom");')
- 
+     
     elif fstab:
       p = fstab[partition]
       self.script.append('format("%s", "%s", "%s", "%s", "%s");' %
@@ -80,13 +80,13 @@ script.Mount("/system")
     """Mount the partition with the given mount_point."""
 	#根据指定的挂载点挂载分区
     fstab = self.info.get("fstab", None)
- 
+
     #wschen 2012-11-12 
-	#这里挂载定制分区custom，暂不作详细描述，随后会针对升级定制分区进行一个详细的介绍
+    #这里挂载定制分区custom，暂不作详细描述，随后会针对升级定制分区进行一个详细的介绍
     if mount_point == "/custom":
       self.script.append('mount("ext4", "EMMC", "/dev/block/mmcblk", "/custom");')
       self.mounts.add(mount_point)
- 
+     
     elif fstab:
       p = fstab[mount_point]
       self.script.append('mount("%s", "%s", "%s", "%s");' %
@@ -112,7 +112,7 @@ edify_generator模块中相对应的MakeSymlinks()函数
     by_dest = {}
     for d, l in symlink_list:
       by_dest.setdefault(d, []).append(l)
- 
+
     for dest, links in sorted(by_dest.iteritems()):
       cmd = ('symlink("%s", ' % (dest,) +
              ",\0".join(['"' + i + '"' for i in sorted(links)]) + ");")
@@ -142,7 +142,7 @@ edify_generator模块中相对应的MakeSymlinks()函数
   def WriteRawImage(self, mount_point, fn):
     """Write the given package file into the partition for the given
     mount point."""
- 
+
     fstab = self.info["fstab"]
     if fstab:
       p = fstab[mount_point]
@@ -153,7 +153,7 @@ edify_generator模块中相对应的MakeSymlinks()函数
           ('assert(package_extract_file("%(fn)s", "/tmp/%(fn)s"),\n'
            '       write_raw_image("/tmp/%(fn)s", "bootimg"),\n'
            '       delete("/tmp/%(fn)s"));') % args)
- 
+     
       elif partition_type == "MTD":
         self.script.append(
             'write_raw_image(package_extract_file("%(fn)s"), "%(device)s");'
@@ -220,6 +220,3 @@ delete("/tmp/boot.img"));执行package_extract_file，如果不返回错误则�
 16、getprop()
 
 语法：getprop("key")：通过指定key的值来获取对应的属性信息。如：getprop(“ro.product.device”)获取ro.product.device的属性值。
-————————————————
-版权声明：本文为CSDN博主「叶桐」的原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接及本声明。
-原文链接：https://blog.csdn.net/huangyabin001/article/details/43965307
