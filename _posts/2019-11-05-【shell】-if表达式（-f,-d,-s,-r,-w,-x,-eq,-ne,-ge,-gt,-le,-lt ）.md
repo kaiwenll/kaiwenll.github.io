@@ -8,7 +8,6 @@ header-img: "img/post-bg-2015.jpg"
 catalog: true
 tags:
     - shell
-    - Meta
 ---
 ### 文件表达式
 ```
@@ -82,6 +81,3 @@ if [ $sting ] 如果string 非空，返回0 (和-n类似)
 
 [ -z STRING ] “STRING” 的长度为零则为真。
 ```
-————————————————
-版权声明：本文为CSDN博主「打卤」的原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接及本声明。
-原文链接：https://blog.csdn.net/liyyzz33/article/details/84836255
