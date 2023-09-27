@@ -10,7 +10,7 @@ tags:
     - zynq
 ---
 
-
+###常用命令
 vi /etc/samba/smb.conf
 设置 Samba 用户和密码，命令 smbpasswd -a root 接着按提示输入密码liangkaiwen
 重新启动 samba 服务，命令/etc/init.d/samba restart
